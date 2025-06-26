@@ -2,14 +2,15 @@ name: Warrior Blog Bot
 
 on:
   schedule:
-    - cron: '0 11 * * *'  # 6 AM CST (UTC+0)
+    - cron: '0 11 * * *'  # 6 AM CST
     - cron: '0 19 * * *'  # 2 PM CST
     - cron: '0 1 * * *'   # 8 PM CST
-  workflow_dispatch:
+  workflow_dispatch:      # allows manual trigger
 
 jobs:
   post:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
