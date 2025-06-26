@@ -1,8 +1,25 @@
 from generator import create_post
 from wordpress import post_to_wordpress
 
-if __name__ == "__main__":
-    print("⚔️ Generating warrior blog post...")
+def main():
+    print("⚙️ Generating warrior blog post...")
     post = create_post()
-    print("📝 Posting to WordPress...")
-    post_to_wordpress(post)
+
+    if not post:
+        print("🚫 Failed to generate post.")
+        return
+
+    if not post.get("body") or len(post["body"]) < 100:
+        print("🚫 Post body is too short. Skipping.")
+        return
+
+    print("🚀 Posting to WordPress...")
+    success = post_to_wordpress(post)
+
+    if success:
+        print("✅ Post published successfully!")
+    else:
+        print("❌ Failed to publish post.")
+
+if __name__ == "__main__":
+    main()
