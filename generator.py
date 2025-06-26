@@ -9,13 +9,22 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 claude_api_key = os.getenv("CLAUDE_API_KEY")
 
+# Optional: rotate themes to make posts unique
+themes = [
+    "Discipline under pressure",
+    "Faith in the unseen",
+    "Mental resilience after failure",
+    "Staying sharp when no one’s watching",
+    "Victory through preparation"
+]
+
 def call_openai(prompt):
     try:
         print("⚡ Using GPT...")
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.8,
+            temperature=0.85,
             max_tokens=800
         )
         return response.choices[0].message.content.strip()
@@ -33,7 +42,7 @@ def call_claude(prompt):
         data = {
             "model": "claude-3-opus-20240229",
             "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.8,
+            "temperature": 0.85,
             "max_tokens": 800
         }
         response = requests.post(
@@ -77,23 +86,25 @@ def parse_blog(raw):
         "categories": [c.strip() for c in cats],
         "tags": [t.strip() for t in tags],
         "body": body,
-        "image": None  # You can later add a DALL·E call or stock fallback here
+        "image": None
     }
 
 def create_post():
+    today = datetime.now()
+    theme_of_day = themes[today.day % len(themes)]  # rotate through themes
     prompt = (
-        "Write a motivational blog post from the perspective of Joseph Santarose.\n"
-        "Line 1: Title\n"
-        "Line 2: Slug: slug-text\n"
-        "Line 3: Categories: list,separated,by,commas\n"
-        "Line 4: Tags: keyword1, keyword2\n"
-        "Line 6 onward: Full blog post body.\n"
-        "Theme: Warrior mindset, no excuses, daily fire."
+        f"Write a motivational blog post from the perspective of Joseph Santarose.\n"
+        f"Date: {today.strftime('%B %d, %Y')} (auto-include this in the blog)\n"
+        f"Line 1: Title\n"
+        f"Line 2: Slug: slug-text\n"
+        f"Line 3: Categories: mindset, faith, warrior\n"
+        f"Line 4: Tags: mindset, joseph santarose, {today.strftime('%A')}\n"
+        f"Line 6 onward: Full blog post body.\n"
+        f"Theme: {theme_of_day}\n"
+        f"Tone: Warrior mindset. No excuses. Introspective but forceful."
     )
 
-    raw = call_openai(prompt)
-    if not raw:
-        raw = call_claude(prompt)
+    raw = call_openai(prompt) or call_claude(prompt)
     if not raw:
         print("🚫 Both AI calls failed — using fallback.")
         raw = (
