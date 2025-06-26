@@ -1,0 +1,11 @@
+schedules:
+  - name: MorningPost
+    cron: "0 12 * * *"
+    command: "python3 main.py"
+  - name: AfternoonPost
+    cron: "0 20 * * *"
+    command: "python3 main.py"
+  - name: NightPost
+    cron: "0 2 * * *"
+    command: "python3 main.py"
+
